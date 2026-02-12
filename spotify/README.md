@@ -1,73 +1,162 @@
-# React + TypeScript + Vite
+# Spotify Analytics
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A beautiful, real-time Spotify analytics dashboard built with React, TypeScript, and the Spotify Web API.
 
-Currently, two official plugins are available:
+![Spotify Analytics](https://img.shields.io/badge/Spotify-Analytics-1DB954?style=for-the-badge&logo=spotify&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- **Currently Playing** - Real-time display of your currently playing track with progress bar
+- **Top Tracks** - View your most played tracks across different time ranges (4 weeks, 6 months, all time)
+- **Recently Played** - Browse your listening history with smart caching for instant loading
+- **Profile Display** - See your Spotify profile info including follower count and premium status
+- **Beautiful UI** - Dark theme with purple accents and smooth animations
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+- **React 19** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool
+- **Tailwind CSS** - Styling
+- **Motion** - Animations (Framer Motion)
+- **React Router** - Navigation
+- **Spotify Web API** - Data source
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Getting Started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Prerequisites
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Node.js 18+
+- A Spotify account
+- A Spotify Developer application
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Spotify App Setup
+
+1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+2. Create a new application
+3. Add your redirect URIs:
+   - Development: `http://127.0.0.1:5173/callback`
+   - Production: `https://your-domain.com/callback`
+4. Note your **Client ID** (you won't need the client secret for PKCE flow)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/spotify-analytics.git
+cd spotify-analytics
+
+# Install dependencies
+npm install
+
+# Create environment file
+cp .env.example .env
+
+# Edit .env with your Spotify Client ID
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Environment Variables
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create a `.env` file with:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+VITE_SPOTIFY_CLIENT_ID=your_client_id_here
+VITE_SPOTIFY_REDIRECT_URI=http://127.0.0.1:5173/callback
 ```
+
+### Development
+
+```bash
+npm run dev
+```
+
+Open [http://127.0.0.1:5173](http://127.0.0.1:5173) in your browser.
+
+### Production Build
+
+```bash
+npm run build
+npm run preview
+```
+
+## Deployment
+
+### Vercel
+
+1. Push your code to GitHub
+2. Import the project in Vercel
+3. Add environment variables:
+   - `VITE_SPOTIFY_CLIENT_ID` - Your Spotify Client ID
+   - `VITE_SPOTIFY_REDIRECT_URI` - `https://your-domain.com/callback`
+4. Deploy!
+
+Remember to add your production redirect URI to your Spotify app settings.
+
+## Project Structure
+
+```
+spotify/
+├── src/
+│   ├── components/        # React components
+│   │   ├── Callback.tsx       # OAuth callback handler
+│   │   ├── CurrentlyPlaying.tsx
+│   │   ├── Dashboard.tsx      # Main dashboard layout
+│   │   ├── LoginPage.tsx
+│   │   ├── ProfileHeader.tsx
+│   │   ├── RecentlyPlayed.tsx
+│   │   └── TopTracks.tsx
+│   ├── config/
+│   │   └── spotify.ts     # Spotify configuration
+│   ├── context/
+│   │   └── AuthContext.tsx    # Authentication state
+│   ├── services/
+│   │   ├── auth.ts        # OAuth PKCE implementation
+│   │   └── spotify.ts     # Spotify API client
+│   ├── App.tsx
+│   ├── index.css          # Global styles + Tailwind
+│   └── main.tsx
+├── .env.example
+├── index.html
+├── package.json
+├── tailwind.config.js
+├── tsconfig.json
+└── vite.config.ts
+```
+
+## API Endpoints Used
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /me` | Current user profile |
+| `GET /me/top/tracks` | User's top tracks |
+| `GET /me/player/currently-playing` | Currently playing track |
+| `GET /me/player/recently-played` | Recently played tracks |
+
+## Authentication
+
+This app uses **OAuth 2.0 Authorization Code Flow with PKCE** (Proof Key for Code Exchange), which is the recommended flow for single-page applications. This approach:
+
+- Doesn't require a client secret on the frontend
+- Is more secure than the implicit grant flow
+- Supports token refresh
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT License - feel free to use this project for your own purposes.
+
+## Acknowledgments
+
+- [Spotify Web API](https://developer.spotify.com/documentation/web-api)
+- [React Bits](https://reactbits.dev) - UI inspiration
+- [Motion](https://motion.dev) - Animation library
+
+---
+
+Made with ♥ and lots of music 🎵
