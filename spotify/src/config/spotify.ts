@@ -23,5 +23,6 @@ export const STORAGE_KEYS = {
   refreshToken: 'spotify_refresh_token',
   tokenExpiry: 'spotify_token_expiry',
   codeVerifier: 'spotify_code_verifier',
+  authState: 'spotify_auth_state',
   recentlyPlayed: 'spotify_recently_played',
 };

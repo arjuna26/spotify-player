@@ -80,29 +80,34 @@ export interface RecentlyPlayedResponse {
   };
 }
 
-// Generic fetch wrapper with auth
-async function spotifyFetch<T>(endpoint: string): Promise<T | null> {
+// Generic fetch wrapper with auth; handles 429 with Retry-After (Spotify rate limits)
+async function spotifyFetch<T>(endpoint: string, retryCount = 0): Promise<T | null> {
   const token = await getAccessToken();
-  
   if (!token) {
     throw new Error('No access token available');
   }
-  
+
   const response = await fetch(`${SPOTIFY_CONFIG.apiBaseUrl}${endpoint}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { Authorization: `Bearer ${token}` },
   });
-  
+
   if (response.status === 204) {
     return null;
   }
-  
+
+  if (response.status === 429 && retryCount < 1) {
+    const retryAfter = parseInt(response.headers.get('Retry-After') ?? '5', 10);
+    const waitMs = Math.min(retryAfter * 1000, 10000);
+    await new Promise((r) => setTimeout(r, waitMs));
+    return spotifyFetch<T>(endpoint, retryCount + 1);
+  }
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.error?.message || `API error: ${response.status}`);
+    const msg = error.error?.message ?? `API error: ${response.status}`;
+    throw new Error(msg);
   }
-  
+
   return response.json();
 }
 

@@ -1,15 +1,5 @@
 @import "tailwindcss";
 
-:root {
-  --bg-primary: #141414;
-  --bg-secondary: #1C1C1C;
-  --accent-dark: #210E35;
-  --accent-purple: #8A2BE2;
-  --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
-  --border-color: rgba(138, 43, 226, 0.2);
-}
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -23,112 +13,53 @@ html, body, #root {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.6;
+  background: #0a0a0a;
+  color: #ffffff;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-primary);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--accent-dark);
-  border-radius: 4px;
+  background: #27272a;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-purple);
+  background: #3f3f46;
 }
 
-/* Gradient text utility */
-.gradient-text {
-  background: linear-gradient(135deg, #fff 0%, #8A2BE2 50%, #210E35 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradientShift 4s ease-in-out infinite;
+/* Selection */
+::selection {
+  background: rgba(29, 185, 84, 0.3);
+  color: #ffffff;
 }
 
-@keyframes gradientShift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+/* Focus outline */
+:focus-visible {
+  outline: 2px solid #1DB954;
+  outline-offset: 2px;
 }
 
-/* Spotify green for playing indicator */
-.spotify-green {
-  color: #1DB954;
+/* Smooth transitions for color scheme changes */
+* {
+  transition-property: background-color, border-color;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
 }
 
-/* Card glow effect */
-.card-glow {
-  position: relative;
-}
-
-.card-glow::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  background: linear-gradient(135deg, var(--accent-purple), var(--accent-dark));
-  border-radius: inherit;
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.card-glow:hover::before {
-  opacity: 0.5;
-}
-
-/* Pulse animation for currently playing */
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-.animate-pulse {
-  animation: pulse 2s ease-in-out infinite;
-}
-
-/* Sound bars animation */
-@keyframes soundBar {
-  0%, 100% {
-    height: 4px;
-  }
-  50% {
-    height: 16px;
-  }
-}
-
-.sound-bar {
-  animation: soundBar 0.5s ease-in-out infinite;
-}
-
-.sound-bar:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.sound-bar:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-.sound-bar:nth-child(4) {
-  animation-delay: 0.3s;
+/* Disable transitions for animations */
+.animate-pulse,
+[class*="animate-"] {
+  transition: none;
 }

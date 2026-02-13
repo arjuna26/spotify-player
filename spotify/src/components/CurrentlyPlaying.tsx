@@ -1,17 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { getCurrentlyPlaying, formatDuration } from '../services/spotify';
 import type { CurrentlyPlaying as CurrentlyPlayingType } from '../services/spotify';
 
 function SoundBars() {
   return (
-    <div className="flex items-end gap-1 h-5">
+    <div className="flex items-end gap-[3px] h-4">
       {[1, 2, 3, 4].map((i) => (
         <motion.div
           key={i}
-          className="w-1 bg-[#1DB954] rounded-full"
+          className="w-[3px] bg-[#1DB954] rounded-full"
           animate={{
-            height: ['4px', '16px', '4px'],
+            height: ['3px', '14px', '3px'],
           }}
           transition={{
             duration: 0.5,
@@ -29,7 +29,6 @@ export default function CurrentlyPlaying() {
   const [data, setData] = useState<CurrentlyPlayingType | null>(null);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
-  const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchCurrentlyPlaying = async () => {
@@ -47,7 +46,7 @@ export default function CurrentlyPlaying() {
     };
 
     fetchCurrentlyPlaying();
-    const interval = setInterval(fetchCurrentlyPlaying, 10000);
+    const interval = setInterval(fetchCurrentlyPlaying, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -67,43 +66,16 @@ export default function CurrentlyPlaying() {
     return () => clearInterval(interval);
   }, [data]);
 
-  // Mouse tracking for glow effect
-  useEffect(() => {
-    const card = cardRef.current;
-    if (!card) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      card.style.setProperty('--glow-x', `${x}px`);
-      card.style.setProperty('--glow-y', `${y}px`);
-      card.style.setProperty('--glow-intensity', '1');
-    };
-
-    const handleMouseLeave = () => {
-      card.style.setProperty('--glow-intensity', '0');
-    };
-
-    card.addEventListener('mousemove', handleMouseMove);
-    card.addEventListener('mouseleave', handleMouseLeave);
-
-    return () => {
-      card.removeEventListener('mousemove', handleMouseMove);
-      card.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, []);
-
   if (loading) {
     return (
-      <div className="bg-[#1C1C1C] rounded-2xl p-8 border border-[rgba(138,43,226,0.2)]">
-        <div className="animate-pulse space-y-6">
-          <div className="h-5 w-40 bg-[#2a2a2a] rounded" />
-          <div className="flex gap-6">
-            <div className="w-24 h-24 bg-[#2a2a2a] rounded-xl" />
-            <div className="flex-1 space-y-3">
-              <div className="h-6 w-3/4 bg-[#2a2a2a] rounded" />
-              <div className="h-4 w-1/2 bg-[#2a2a2a] rounded" />
+      <div className="bg-zinc-900/50 rounded-2xl p-6 sm:p-8">
+        <div className="animate-pulse">
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            <div className="w-48 h-48 sm:w-56 sm:h-56 bg-zinc-800 rounded-xl" />
+            <div className="flex-1 space-y-4 text-center sm:text-left w-full">
+              <div className="h-4 w-24 bg-zinc-800 rounded mx-auto sm:mx-0" />
+              <div className="h-8 w-3/4 bg-zinc-800 rounded mx-auto sm:mx-0" />
+              <div className="h-5 w-1/2 bg-zinc-800 rounded mx-auto sm:mx-0" />
             </div>
           </div>
         </div>
@@ -116,114 +88,92 @@ export default function CurrentlyPlaying() {
   const progressPercent = track ? (progress / track.duration_ms) * 100 : 0;
 
   return (
-    <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative bg-[#1C1C1C] rounded-2xl p-8 border border-[rgba(138,43,226,0.2)] overflow-hidden"
-      style={{
-        '--glow-x': '50%',
-        '--glow-y': '50%',
-        '--glow-intensity': '0',
-      } as React.CSSProperties}
-    >
-      {/* Glow effect */}
-      <div
-        className="absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none"
-        style={{
-          background: `radial-gradient(
-            400px circle at var(--glow-x) var(--glow-y),
-            rgba(138, 43, 226, calc(var(--glow-intensity) * 0.15)) 0%,
-            transparent 60%
-          )`,
-        }}
-      />
-
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-6 relative z-10">
-        {isPlaying ? (
-          <>
-            <SoundBars />
-            <span className="text-[#1DB954] text-sm font-semibold tracking-wide">Now Playing</span>
-          </>
-        ) : (
-          <>
-            <svg className="w-5 h-5 text-[#a1a1aa]" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-            </svg>
-            <span className="text-[#a1a1aa] text-sm font-medium">
-              {track ? 'Paused' : 'Nothing Playing'}
-            </span>
-          </>
-        )}
-      </div>
-
+    <div className="bg-zinc-900/50 rounded-2xl p-6 sm:p-8 border border-zinc-800/50">
       <AnimatePresence mode="wait">
         {track ? (
           <motion.div
             key={track.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="relative z-10"
           >
-            <div className="flex gap-6">
-              {/* Album Art */}
+            <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
+              {/* Album Art - Large and Prominent */}
               <motion.a
                 href={track.album.external_urls.spotify}
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 className="shrink-0 relative group"
               >
                 <img
                   src={track.album.images[0]?.url || '/placeholder.png'}
                   alt={track.album.name}
-                  className="w-24 h-24 rounded-xl shadow-2xl ring-2 ring-[rgba(138,43,226,0.3)]"
+                  className="w-48 h-48 sm:w-56 sm:h-56 rounded-xl shadow-2xl shadow-black/50"
                 />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
-                  <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>
+                {isPlaying && (
+                  <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm rounded-full p-2">
+                    <SoundBars />
+                  </div>
+                )}
               </motion.a>
 
               {/* Track Info */}
-              <div className="flex-1 min-w-0 space-y-2">
+              <div className="flex-1 min-w-0 text-center sm:text-left space-y-3">
+                {/* Playing Status */}
+                <div className="flex items-center justify-center sm:justify-start gap-2">
+                  {isPlaying ? (
+                    <>
+                      <span className="w-2 h-2 bg-[#1DB954] rounded-full animate-pulse" />
+                      <span className="text-[#1DB954] text-xs font-medium uppercase tracking-wider">Now Playing</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="w-2 h-2 bg-zinc-500 rounded-full" />
+                      <span className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Paused</span>
+                    </>
+                  )}
+                </div>
+
+                {/* Track Name */}
                 <a
                   href={track.external_urls.spotify}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block group"
                 >
-                  <h3 className="font-bold text-xl text-white truncate group-hover:text-[#8A2BE2] transition-colors">
+                  <h2 className="font-bold text-2xl sm:text-3xl text-white truncate group-hover:text-[#1DB954] transition-colors">
                     {track.name}
-                  </h3>
+                  </h2>
                 </a>
-                <p className="text-[#a1a1aa] text-base truncate">
+
+                {/* Artist */}
+                <p className="text-zinc-400 text-lg truncate">
                   {track.artists.map((a) => a.name).join(', ')}
                 </p>
-                <p className="text-[#71717a] text-sm truncate">
+
+                {/* Album */}
+                <p className="text-zinc-600 text-sm truncate">
                   {track.album.name}
                 </p>
-              </div>
-            </div>
 
-            {/* Progress Bar */}
-            <div className="mt-8">
-              <div className="h-1.5 bg-[#2a2a2a] rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-[#8A2BE2] to-[#1DB954]"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progressPercent}%` }}
-                  transition={{ duration: 0.5 }}
-                />
-              </div>
-              <div className="flex justify-between mt-2 text-xs text-[#71717a]">
-                <span>{formatDuration(progress)}</span>
-                <span>{formatDuration(track.duration_ms)}</span>
+                {/* Progress Bar */}
+                <div className="pt-4">
+                  <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-white"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progressPercent}%` }}
+                      transition={{ duration: 0.5 }}
+                    />
+                  </div>
+                  <div className="flex justify-between mt-2 text-xs text-zinc-500">
+                    <span>{formatDuration(progress)}</span>
+                    <span>{formatDuration(track.duration_ms)}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -231,12 +181,18 @@ export default function CurrentlyPlaying() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-12 relative z-10"
+            className="text-center py-16"
           >
-            <p className="text-[#71717a] text-lg">Start playing something on Spotify!</p>
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-zinc-800/50 flex items-center justify-center">
+              <svg className="w-10 h-10 text-zinc-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+              </svg>
+            </div>
+            <h3 className="text-zinc-400 text-lg font-medium mb-2">Nothing playing</h3>
+            <p className="text-zinc-600 text-sm">Play something on Spotify to see it here</p>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }

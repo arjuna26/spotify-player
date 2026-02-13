@@ -22,16 +22,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshUser = async () => {
     try {
       const token = await getAccessToken();
-      if (token) {
-        const userData = await getCurrentUser();
-        setUser(userData);
-        setIsLoggedIn(true);
-      } else {
+      if (!token) {
         setIsLoggedIn(false);
         setUser(null);
+        return;
+      }
+      setIsLoggedIn(true);
+      try {
+        const userData = await getCurrentUser();
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+        setUser(null);
+        // 429 = rate limited: we still have a valid token, stay logged in
+        const is429 = error instanceof Error && error.message.includes('429');
+        if (!is429) {
+          setIsLoggedIn(false);
+        }
       }
     } catch (error) {
-      console.error('Failed to fetch user:', error);
+      console.error('Auth check failed:', error);
       setIsLoggedIn(false);
       setUser(null);
     }
@@ -53,6 +63,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     authLogout();
     setIsLoggedIn(false);
     setUser(null);
+    // Redirect to login page
+    window.location.href = '/';
   };
 
   return (

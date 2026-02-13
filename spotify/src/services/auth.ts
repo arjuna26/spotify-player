@@ -1,8 +1,8 @@
 import { SPOTIFY_CONFIG, STORAGE_KEYS } from '../config/spotify';
 
-// Generate a random string for PKCE code verifier
+// Generate a random string for PKCE code verifier (RFC 7636 compliant)
 function generateRandomString(length: number): string {
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
   const values = crypto.getRandomValues(new Uint8Array(length));
   return values.reduce((acc, x) => acc + possible[x % possible.length], '');
 }
@@ -14,7 +14,7 @@ async function sha256(plain: string): Promise<ArrayBuffer> {
   return window.crypto.subtle.digest('SHA-256', data);
 }
 
-// Base64 URL encode
+// Base64 URL encode (RFC 4648 Section 5)
 function base64urlencode(input: ArrayBuffer): string {
   return btoa(String.fromCharCode(...new Uint8Array(input)))
     .replace(/=/g, '')
@@ -28,13 +28,20 @@ async function generateCodeChallenge(verifier: string): Promise<string> {
   return base64urlencode(hashed);
 }
 
-// Initiate Spotify login with PKCE
+// Initiate Spotify login with PKCE (recommended for browser/web apps; no client secret).
+// See: https://developer.spotify.com/documentation/web-api/tutorials/code-pkce-flow
 export async function initiateSpotifyLogin(): Promise<void> {
+  // Clear any existing auth data to start fresh
+  localStorage.removeItem(STORAGE_KEYS.codeVerifier);
+  localStorage.removeItem(STORAGE_KEYS.authState);
+  
   const codeVerifier = generateRandomString(64);
   const codeChallenge = await generateCodeChallenge(codeVerifier);
+  const state = generateRandomString(16);
   
-  // Store code verifier for later use
+  // Store code verifier and state for later verification
   localStorage.setItem(STORAGE_KEYS.codeVerifier, codeVerifier);
+  localStorage.setItem(STORAGE_KEYS.authState, state);
   
   const params = new URLSearchParams({
     client_id: SPOTIFY_CONFIG.clientId,
@@ -43,20 +50,30 @@ export async function initiateSpotifyLogin(): Promise<void> {
     scope: SPOTIFY_CONFIG.scopes,
     code_challenge_method: 'S256',
     code_challenge: codeChallenge,
+    state: state,
   });
   
   window.location.href = `${SPOTIFY_CONFIG.authEndpoint}?${params.toString()}`;
 }
 
+// Verify state parameter to prevent CSRF attacks
+export function verifyState(returnedState: string | null): boolean {
+  const storedState = localStorage.getItem(STORAGE_KEYS.authState);
+  if (!storedState || !returnedState) {
+    return false;
+  }
+  return storedState === returnedState;
+}
+
 // Exchange authorization code for access token
 export async function exchangeCodeForToken(code: string): Promise<boolean> {
   const codeVerifier = localStorage.getItem(STORAGE_KEYS.codeVerifier);
-  
+
   if (!codeVerifier) {
-    console.error('No code verifier found. The authorization code may have already been used or expired.');
+    console.error('No code verifier found. Please try logging in again.');
     return false;
   }
-  
+
   try {
     const response = await fetch(SPOTIFY_CONFIG.tokenEndpoint, {
       method: 'POST',
@@ -71,41 +88,30 @@ export async function exchangeCodeForToken(code: string): Promise<boolean> {
         code_verifier: codeVerifier,
       }),
     });
-    
+
+    const data = await response.json();
+
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      
-      // If invalid_grant, the code was already used or expired - clean up
-      if (error.error === 'invalid_grant') {
-        localStorage.removeItem(STORAGE_KEYS.codeVerifier);
-      }
-      
-      // Don't log to console if it's just a duplicate request
-      if (error.error !== 'invalid_grant' || !isAuthenticated()) {
-        console.error('Token exchange failed:', error);
-      }
-      
+      console.error('Token exchange failed:', data);
+      localStorage.removeItem(STORAGE_KEYS.codeVerifier);
+      localStorage.removeItem(STORAGE_KEYS.authState);
       return false;
     }
-    
-    const data = await response.json();
-    
-    // Store tokens
+
     localStorage.setItem(STORAGE_KEYS.accessToken, data.access_token);
     if (data.refresh_token) {
       localStorage.setItem(STORAGE_KEYS.refreshToken, data.refresh_token);
     }
-    
-    // Calculate and store expiry time
     const expiryTime = Date.now() + (data.expires_in * 1000);
     localStorage.setItem(STORAGE_KEYS.tokenExpiry, expiryTime.toString());
-    
-    // Clean up code verifier only after successful exchange
+
     localStorage.removeItem(STORAGE_KEYS.codeVerifier);
-    
+    localStorage.removeItem(STORAGE_KEYS.authState);
     return true;
   } catch (error) {
     console.error('Token exchange error:', error);
+    localStorage.removeItem(STORAGE_KEYS.codeVerifier);
+    localStorage.removeItem(STORAGE_KEYS.authState);
     return false;
   }
 }
@@ -191,5 +197,6 @@ export function logout(): void {
   localStorage.removeItem(STORAGE_KEYS.refreshToken);
   localStorage.removeItem(STORAGE_KEYS.tokenExpiry);
   localStorage.removeItem(STORAGE_KEYS.codeVerifier);
-  // Keep recently played cache for better UX on re-login
+  localStorage.removeItem(STORAGE_KEYS.authState);
+  localStorage.removeItem(STORAGE_KEYS.recentlyPlayed);
 }

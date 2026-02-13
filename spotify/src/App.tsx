@@ -7,8 +7,8 @@ import Dashboard from './components/Dashboard';
 // Loading spinner component
 function LoadingScreen() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#141414]">
-      <div className="w-12 h-12 border-4 border-[#8A2BE2] border-t-transparent rounded-full animate-spin" />
+    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+      <div className="w-10 h-10 border-2 border-zinc-800 border-t-[#1DB954] rounded-full animate-spin" />
     </div>
   );
 }
