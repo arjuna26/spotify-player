@@ -1,31 +1,29 @@
+import { useState } from 'react';
 import CurrentlyPlaying from './CurrentlyPlaying';
 // import RecentlyPlayed from './RecentlyPlayed';
 import { useAuth } from '../context/AuthContext';
-// import LiquidEther from '../react-bits/LiquidEther.jsx';
-import GridScan from '../react-bits/GridScan.jsx';
+import LiquidEther from '../react-bits/LiquidEther.jsx';
+// import GridScan from '../react-bits/GridScan.jsx';
+
+const DEFAULT_SCAN_COLOR = '#1DB954';
 
 export default function Dashboard() {
   const { logout } = useAuth();
+  const [scanColor, setScanColor] = useState(DEFAULT_SCAN_COLOR);
 
   return (
     <>
     <div className="w-full h-full absolute top-0 left-0">
-      <GridScan
-        sensitivity={0.25}
-        lineThickness={1}
-        linesColor="#392e4e"
-        scanColor="#ff9ffc"
-        scanOpacity={0.4}
-        gridScale={0.03}
-        lineStyle="solid"
-        lineJitter={0.1}
-        scanDirection="pingpong"
-        noiseIntensity={0.04}
-        scanGlow={0.9}
-        scanSoftness={2}
-        scanDuration={1.5}
-        scanDelay={2}
-        scanOnClick={true}
+      <LiquidEther
+        mouseForce={16}
+        cursorSize={100}
+        isViscous
+        viscous={30}
+        colors={[scanColor]}
+        autoDemo
+        autoSpeed={0.7}
+        autoIntensity={1.2}
+        resolution={0.25}
       />
     </div>
 
@@ -46,7 +44,7 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="flex flex-col items-center justify-center w-full h-full">
-          <CurrentlyPlaying />
+          <CurrentlyPlaying onDominantColor={setScanColor} />
       </main> 
     </div>
     </>

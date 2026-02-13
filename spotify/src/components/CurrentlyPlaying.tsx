@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react';
 import { getCurrentlyPlaying, formatDuration } from '../services/spotify';
 import type { CurrentlyPlaying as CurrentlyPlayingType } from '../services/spotify';
+import { getDominantColor } from '../utils/dominantColor';
 
-export default function CurrentlyPlaying() {
+interface CurrentlyPlayingProps {
+  onDominantColor?: (color: string) => void;
+}
+
+export default function CurrentlyPlaying({ onDominantColor }: CurrentlyPlayingProps) {
   const [data, setData] = useState<CurrentlyPlayingType | null>(null);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -43,6 +48,16 @@ export default function CurrentlyPlaying() {
     return () => clearInterval(interval);
   }, [data]);
 
+  // Extract dominant color from album art and report to parent (e.g. for GridScan)
+  useEffect(() => {
+    const imageUrl = data?.item?.album?.images?.[0]?.url;
+    if (!imageUrl || !onDominantColor) return;
+
+    getDominantColor(imageUrl)
+      .then(onDominantColor)
+      .catch(() => { /* ignore; keep previous color */ });
+  }, [data?.item?.album?.images?.[0]?.url, onDominantColor]);
+
   if (loading) {
     return (
       <div className="bg-zinc-900/50 rounded-2xl p-6 sm:p-8">
@@ -66,84 +81,85 @@ export default function CurrentlyPlaying() {
 
   return (
     <div className="bg-zinc-900 rounded-2xl p-6 sm:p-8 border border-zinc-800">
+      
         {track ? (
-          <div key={track.id} className="relative z-10">
-            <div className="flex flex-col items-center gap-4">
-              {/* Playing Status */}
-              <div className="flex items-center justify-center !pt-4">
-                  {isPlaying ? (
-                    <>
-                      <span className="w-2 h-2 bg-[#1DB954] rounded-full animate-pulse" />
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Paused</span>
-                    </>
-                  )}
-                </div>
-              {/* Album Art - Large and Prominent */}
-              <a
-                href={track.album.external_urls.spotify}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="shrink-0 relative group"
-              >
-                <img
-                  src={track.album.images[0]?.url || '/placeholder.png'}
-                  alt={track.album.name}
-                  className="w-48 h-48 sm:w-56 sm:h-56 rounded-xl shadow-2xl shadow-black/50"
-                />
-              </a>
-
-              {/* Track Info */}
-              <div className="flex-1 min-w-0 text-center space-y-3">
-                {/* Track Name */}
+            <div key={track.id} className="relative z-10">
+              <div className="flex flex-col items-center gap-4">
+                {/* Playing Status */}
+                <div className="flex items-center justify-center !pt-4">
+                    {isPlaying ? (
+                      <>
+                        <span className="w-2 h-2 bg-[#1DB954] rounded-full animate-pulse" />
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Paused</span>
+                      </>
+                    )}
+                  </div>
+                {/* Album Art - Large and Prominent */}
                 <a
-                  href={track.external_urls.spotify}
+                  href={track.album.external_urls.spotify}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block group"
+                  className="shrink-0 relative group"
                 >
-                  <h2 className="font-bold text-2xl sm:text-3xl text-white truncate group-hover:text-[#1DB954] transition-colors">
-                    {track.name}
-                  </h2>
+                  <img
+                    src={track.album.images[0]?.url || '/placeholder.png'}
+                    alt={track.album.name}
+                    className="w-48 h-48 sm:w-56 sm:h-56 rounded-xl shadow-2xl shadow-black/50"
+                  />
                 </a>
 
-                {/* Artist */}
-                <p className="text-zinc-200 text-lg truncate z-10">
-                  {track.artists.map((a) => a.name).join(', ')}
-                </p>
+                {/* Track Info */}
+                <div className="flex-1 min-w-0 text-center space-y-3">
+                  {/* Track Name */}
+                  <a
+                    href={track.external_urls.spotify}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block group"
+                  >
+                    <h2 className="font-bold text-2xl sm:text-3xl text-white truncate group-hover:text-[#1DB954] transition-colors">
+                      {track.name}
+                    </h2>
+                  </a>
 
-                {/* Album */}
-                <p className="text-zinc-400 text-sm truncate z-10">
-                  {track.album.name}
-                </p>
+                  {/* Artist */}
+                  <p className="text-zinc-200 text-lg truncate z-10">
+                    {track.artists.map((a) => a.name).join(', ')}
+                  </p>
 
-                {/* Progress Bar */}
-                <div className="!p-8">
-                  <div className="min-w-72 h-1 bg-zinc-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[#1DB954]"
-                      style={{ width: `${progressPercent}%`,
-                               transition: 'transform 0.1s ease-in-out' }}
-                    />
-                  </div>
-                  <div className="flex justify-between mt-2 text-xs text-zinc-500">
-                    <span>{formatDuration(progress)}</span>
-                    <span>{formatDuration(track.duration_ms)}</span>
+                  {/* Album */}
+                  <p className="text-zinc-400 text-sm truncate z-10">
+                    {track.album.name}
+                  </p>
+
+                  {/* Progress Bar */}
+                  <div className="!p-8">
+                    <div className="min-w-72 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[#1DB954]"
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between mt-2 text-xs text-zinc-500">
+                      <span>{formatDuration(progress)}</span>
+                      <span>{formatDuration(track.duration_ms)}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
         ) : (
           <div
-            className="text-center py-16"
+            className="text-center !p-4"
           >
             <h3 className="text-zinc-400 text-lg font-medium mb-2">Nothing playing</h3>
             <p className="text-zinc-600 text-sm">Play something on Spotify to see it here</p>
           </div>
         )}
     </div>
+
   );
 }
