@@ -1,29 +1,6 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { getCurrentlyPlaying, formatDuration } from '../services/spotify';
 import type { CurrentlyPlaying as CurrentlyPlayingType } from '../services/spotify';
-
-function SoundBars() {
-  return (
-    <div className="flex items-end gap-[3px] h-4">
-      {[1, 2, 3, 4].map((i) => (
-        <motion.div
-          key={i}
-          className="w-[3px] bg-[#1DB954] rounded-full"
-          animate={{
-            height: ['3px', '14px', '3px'],
-          }}
-          transition={{
-            duration: 0.5,
-            repeat: Infinity,
-            delay: i * 0.1,
-            ease: 'easeInOut',
-          }}
-        />
-      ))}
-    </div>
-  );
-}
 
 export default function CurrentlyPlaying() {
   const [data, setData] = useState<CurrentlyPlayingType | null>(null);
@@ -88,24 +65,27 @@ export default function CurrentlyPlaying() {
   const progressPercent = track ? (progress / track.duration_ms) * 100 : 0;
 
   return (
-    <div className="bg-zinc-900/50 rounded-2xl p-6 sm:p-8 border border-zinc-800/50">
-      <AnimatePresence mode="wait">
+    <div className="bg-zinc-900 rounded-2xl p-6 sm:p-8 border border-zinc-800">
         {track ? (
-          <motion.div
-            key={track.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
+          <div key={track.id} className="relative z-10">
+            <div className="flex flex-col items-center gap-4">
+              {/* Playing Status */}
+              <div className="flex items-center justify-center !pt-4">
+                  {isPlaying ? (
+                    <>
+                      <span className="w-2 h-2 bg-[#1DB954] rounded-full animate-pulse" />
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Paused</span>
+                    </>
+                  )}
+                </div>
               {/* Album Art - Large and Prominent */}
-              <motion.a
+              <a
                 href={track.album.external_urls.spotify}
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
                 className="shrink-0 relative group"
               >
                 <img
@@ -113,30 +93,10 @@ export default function CurrentlyPlaying() {
                   alt={track.album.name}
                   className="w-48 h-48 sm:w-56 sm:h-56 rounded-xl shadow-2xl shadow-black/50"
                 />
-                {isPlaying && (
-                  <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm rounded-full p-2">
-                    <SoundBars />
-                  </div>
-                )}
-              </motion.a>
+              </a>
 
               {/* Track Info */}
-              <div className="flex-1 min-w-0 text-center sm:text-left space-y-3">
-                {/* Playing Status */}
-                <div className="flex items-center justify-center sm:justify-start gap-2">
-                  {isPlaying ? (
-                    <>
-                      <span className="w-2 h-2 bg-[#1DB954] rounded-full animate-pulse" />
-                      <span className="text-[#1DB954] text-xs font-medium uppercase tracking-wider">Now Playing</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="w-2 h-2 bg-zinc-500 rounded-full" />
-                      <span className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Paused</span>
-                    </>
-                  )}
-                </div>
-
+              <div className="flex-1 min-w-0 text-center space-y-3">
                 {/* Track Name */}
                 <a
                   href={track.external_urls.spotify}
@@ -150,23 +110,22 @@ export default function CurrentlyPlaying() {
                 </a>
 
                 {/* Artist */}
-                <p className="text-zinc-400 text-lg truncate">
+                <p className="text-zinc-200 text-lg truncate z-10">
                   {track.artists.map((a) => a.name).join(', ')}
                 </p>
 
                 {/* Album */}
-                <p className="text-zinc-600 text-sm truncate">
+                <p className="text-zinc-400 text-sm truncate z-10">
                   {track.album.name}
                 </p>
 
                 {/* Progress Bar */}
-                <div className="pt-4">
-                  <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full bg-white"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progressPercent}%` }}
-                      transition={{ duration: 0.5 }}
+                <div className="!p-8">
+                  <div className="min-w-72 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#1DB954]"
+                      style={{ width: `${progressPercent}%`,
+                               transition: 'transform 0.1s ease-in-out' }}
                     />
                   </div>
                   <div className="flex justify-between mt-2 text-xs text-zinc-500">
@@ -176,23 +135,15 @@ export default function CurrentlyPlaying() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+          <div
             className="text-center py-16"
           >
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-zinc-800/50 flex items-center justify-center">
-              <svg className="w-10 h-10 text-zinc-600" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-              </svg>
-            </div>
             <h3 className="text-zinc-400 text-lg font-medium mb-2">Nothing playing</h3>
             <p className="text-zinc-600 text-sm">Play something on Spotify to see it here</p>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </div>
   );
 }

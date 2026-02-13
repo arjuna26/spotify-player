@@ -65,7 +65,6 @@ export default function Callback() {
               </svg>
             </div>
             <p className="text-red-400 text-lg font-medium">{error}</p>
-            <p className="text-zinc-500 text-sm">Redirecting to login...</p>
           </div>
         ) : (
           <div className="space-y-6">
@@ -77,8 +76,6 @@ export default function Callback() {
               />
             </div>
             <div className="space-y-2">
-              <p className="text-white text-lg font-medium">Connecting to Spotify</p>
-              <p className="text-zinc-500 text-sm">Please wait...</p>
             </div>
           </div>
         )}
