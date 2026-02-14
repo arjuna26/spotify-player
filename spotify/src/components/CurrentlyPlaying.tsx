@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getCurrentlyPlaying, formatDuration } from '../services/spotify';
 import type { CurrentlyPlaying as CurrentlyPlayingType } from '../services/spotify';
 import { getDominantColor } from '../utils/dominantColor';
+import TiltedCard from '../react-bits/TiltedCard';
 
 interface CurrentlyPlayingProps {
   onDominantColor?: (color: string) => void;
@@ -102,12 +103,20 @@ export default function CurrentlyPlaying({ onDominantColor }: CurrentlyPlayingPr
                   href={track.album.external_urls.spotify}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="shrink-0 relative group"
+                  className="shrink-0 relative group block"
                 >
-                  <img
-                    src={track.album.images[0]?.url || '/placeholder.png'}
-                    alt={track.album.name}
-                    className="w-48 h-48 sm:w-56 sm:h-56 rounded-xl shadow-2xl shadow-black/50"
+                  <TiltedCard
+                    imageSrc={track.album.images[0]?.url ?? '/placeholder.png'}
+                    altText={track.album.name}
+                    captionText={track.album.name}
+                    containerWidth="100%"
+                    containerHeight="14rem"
+                    imageWidth="14rem"
+                    imageHeight="14rem"
+                    scaleOnHover={1.05}
+                    rotateAmplitude={12}
+                    showMobileWarning={false}
+                    showTooltip={false}
                   />
                 </a>
 
