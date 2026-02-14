@@ -1,71 +1,50 @@
-import { motion } from 'motion/react';
-import ProfileHeader from './ProfileHeader';
+import { useState } from 'react';
 import CurrentlyPlaying from './CurrentlyPlaying';
-import TopTracks from './TopTracks';
-import RecentlyPlayed from './RecentlyPlayed';
+import { useAuth } from '../context/AuthContext';
+import LiquidEther from '../react-bits/LiquidEther.jsx';
+
+// const DEFAULT_SCAN_COLOR = '#0a0a0a';
 
 export default function Dashboard() {
+  const { logout } = useAuth();
+  const [scanColor, setScanColor] = useState('');
+
   return (
-    <div className="min-h-screen bg-[#141414]">
-      {/* Background gradient */}
-      <div 
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          background: `
-            radial-gradient(ellipse at 0% 0%, rgba(138, 43, 226, 0.1) 0%, transparent 50%),
-            radial-gradient(ellipse at 100% 100%, rgba(33, 14, 53, 0.2) 0%, transparent 50%)
-          `,
-        }}
+    <>
+    <div className="w-full h-full absolute top-0 left-0">
+      <LiquidEther
+        mouseForce={16}
+        cursorSize={150}
+        isViscous
+        viscous={30}
+        colors={[scanColor]}
+        autoDemo={true}
+        autoSpeed={0.5}
+        autoIntensity={2}
+        resolution={0.5}
       />
+    </div>
 
-      {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
-        {/* Profile Header */}
-        <ProfileHeader />
-
-        {/* Dashboard Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Currently Playing & Top Tracks */}
-          <div className="lg:col-span-2 space-y-8">
-            <CurrentlyPlaying />
-            <TopTracks />
-          </div>
-
-          {/* Right Column - Recently Played */}
-          <div className="lg:col-span-1">
-            <RecentlyPlayed />
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center">
+      {/* Header */}
+      <header className="absolute top-5 z-50 backdrop-blur-xl">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={logout}
+              className="text-white text-sm transition-colors"
+            >
+              Sign out
+            </button>
           </div>
         </div>
+      </header>
 
-        {/* Footer */}
-        <motion.footer
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-16 pt-8 border-t border-[rgba(138,43,226,0.1)] text-center"
-        >
-          <p className="text-[#52525b] text-sm">
-            Built with{' '}
-            <a 
-              href="https://developer.spotify.com/documentation/web-api" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-[#1DB954] hover:text-[#1ed760] hover:underline transition-colors"
-            >
-              Spotify Web API
-            </a>
-            {' '}&{' '}
-            <a 
-              href="https://reactbits.dev" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-[#8A2BE2] hover:text-[#a855f7] hover:underline transition-colors"
-            >
-              React Bits
-            </a>
-          </p>
-        </motion.footer>
-      </div>
+      {/* Main Content */}
+      <main className="flex flex-col items-center justify-center w-full h-full">
+          <CurrentlyPlaying onDominantColor={setScanColor} />
+      </main> 
     </div>
+    </>
   );
 }

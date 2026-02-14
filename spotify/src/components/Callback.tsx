@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { exchangeCodeForToken, isAuthenticated } from '../services/auth';
+import { exchangeCodeForToken, isAuthenticated, verifyState } from '../services/auth';
 import { useAuth } from '../context/AuthContext';
 
 export default function Callback() {
@@ -9,80 +9,75 @@ export default function Callback() {
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
   const [error, setError] = useState<string | null>(null);
-  const hasProcessed = useRef(false);
 
   useEffect(() => {
-    // Prevent multiple executions
-    if (hasProcessed.current) return;
-    
-    // If already authenticated, redirect to dashboard immediately
     if (isAuthenticated()) {
       navigate('/dashboard', { replace: true });
       return;
     }
 
-    const handleCallback = async () => {
-      hasProcessed.current = true;
-      
-      const code = searchParams.get('code');
-      const errorParam = searchParams.get('error');
+    const code = searchParams.get('code');
+    const state = searchParams.get('state');
+    const errorParam = searchParams.get('error');
 
-      if (errorParam) {
-        setError('Authorization was denied. Please try again.');
-        setTimeout(() => navigate('/', { replace: true }), 3000);
-        return;
-      }
+    if (errorParam) {
+      setError('Authorization was denied. Please try again.');
+      setTimeout(() => navigate('/', { replace: true }), 2000);
+      return;
+    }
 
-      if (!code) {
-        setError('No authorization code received.');
-        setTimeout(() => navigate('/', { replace: true }), 3000);
-        return;
-      }
+    if (!verifyState(state)) {
+      setError('Security verification failed. Please try again.');
+      setTimeout(() => navigate('/', { replace: true }), 2000);
+      return;
+    }
 
-      const success = await exchangeCodeForToken(code);
+    if (!code) {
+      setError('No authorization code received.');
+      setTimeout(() => navigate('/', { replace: true }), 2000);
+      return;
+    }
 
+    exchangeCodeForToken(code).then((success) => {
       if (success) {
-        await refreshUser();
-        // Use replace to prevent back button from going to callback
-        navigate('/dashboard', { replace: true });
+        refreshUser().then(() => navigate('/dashboard', { replace: true }));
       } else {
-        // Check if we're authenticated anyway (might have succeeded on first try)
-        if (isAuthenticated()) {
-          await refreshUser();
-          navigate('/dashboard', { replace: true });
-        } else {
-          setError('Failed to authenticate. Please try again.');
-          setTimeout(() => navigate('/', { replace: true }), 3000);
-        }
+        setError('Authentication failed. Please try again.');
+        setTimeout(() => navigate('/', { replace: true }), 2000);
       }
-    };
-
-    handleCallback();
+    });
+    // Run once on mount; code is one-time use
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
+  }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-[#141414]">
+    <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-[#0a0a0a]">
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
         className="text-center"
       >
         {error ? (
-          <>
-            <div className="text-red-500 text-xl mb-4">{error}</div>
-            <p className="text-[#a1a1aa]">Redirecting...</p>
-          </>
+          <div className="space-y-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-red-500/10 flex items-center justify-center">
+              <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <p className="text-red-400 text-lg font-medium">{error}</p>
+          </div>
         ) : (
-          <>
-            {/* Loading spinner */}
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-12 h-12 border-4 border-[#8A2BE2] border-t-transparent rounded-full mx-auto mb-4"
-            />
-            <p className="text-[#a1a1aa] text-lg">Connecting to Spotify...</p>
-          </>
+          <div className="space-y-6">
+            <div className="relative w-16 h-16 mx-auto">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                className="w-16 h-16 border-2 border-zinc-800 border-t-[#1DB954] rounded-full"
+              />
+            </div>
+            <div className="space-y-2">
+            </div>
+          </div>
         )}
       </motion.div>
     </div>
