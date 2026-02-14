@@ -1,19 +1,14 @@
 # Spotify Analytics
 
-A beautiful, real-time Spotify analytics dashboard built with React, TypeScript, and the Spotify Web API.
+A beautiful, real-time Spotify analytics dashboard built with React + react-bits, TypeScript, and the Spotify Web API.
+
+<img width="750" height="430" alt="image" src="https://github.com/user-attachments/assets/f7f4f231-d426-4203-8dd0-fa388e272842" />
+
 
 ![Spotify Analytics](https://img.shields.io/badge/Spotify-Analytics-1DB954?style=for-the-badge&logo=spotify&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
-
-## Features
-
-- **Currently Playing** - Real-time display of your currently playing track with progress bar
-- **Top Tracks** - View your most played tracks across different time ranges (4 weeks, 6 months, all time)
-- **Recently Played** - Browse your listening history with smart caching for instant loading
-- **Profile Display** - See your Spotify profile info including follower count and premium status
-- **Beautiful UI** - Dark theme with purple accents and smooth animations
 
 ## Tech Stack
 
