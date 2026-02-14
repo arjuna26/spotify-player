@@ -2,8 +2,10 @@
 
 A beautiful, real-time Spotify analytics dashboard built with React + react-bits, TypeScript, and the Spotify Web API.
 
-<img width="750" height="430" alt="image" src="https://github.com/user-attachments/assets/f7f4f231-d426-4203-8dd0-fa388e272842" />
+<img width="375" height="215" alt="image" src="https://github.com/user-attachments/assets/ec39d2c2-3ad6-4e4e-aa85-2ff6e6b321cd" />
+<img width="375" height="215" alt="image" src="https://github.com/user-attachments/assets/f7f4f231-d426-4203-8dd0-fa388e272842" />
 
+:D
 
 ![Spotify Analytics](https://img.shields.io/badge/Spotify-Analytics-1DB954?style=for-the-badge&logo=spotify&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)
