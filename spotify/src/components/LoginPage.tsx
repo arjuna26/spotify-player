@@ -15,8 +15,8 @@ export default function LoginPage() {
           isViscous
           viscous={30}
           colors={["#5227ff","#b19eef"]}
-          autoDemo
-          autoSpeed={0.4}
+          autoDemo={true}
+          autoSpeed={0.5}
           autoIntensity={2.2}
           isBounce={false}
           resolution={0.25}
