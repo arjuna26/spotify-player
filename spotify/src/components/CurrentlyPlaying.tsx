@@ -3,12 +3,14 @@ import { getCurrentlyPlaying, formatDuration } from '../services/spotify';
 import type { CurrentlyPlaying as CurrentlyPlayingType } from '../services/spotify';
 import { getDominantColor } from '../utils/dominantColor';
 import TiltedCard from '../react-bits/TiltedCard';
+import TiltWrapper from '../react-bits/TiltWrapper';
 
 interface CurrentlyPlayingProps {
   onDominantColor?: (color: string) => void;
+  onTrackChange?: (trackId: string | null, color: string) => void;
 }
 
-export default function CurrentlyPlaying({ onDominantColor }: CurrentlyPlayingProps) {
+export default function CurrentlyPlaying({ onDominantColor, onTrackChange }: CurrentlyPlayingProps) {
   const [data, setData] = useState<CurrentlyPlayingType | null>(null);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -49,15 +51,23 @@ export default function CurrentlyPlaying({ onDominantColor }: CurrentlyPlayingPr
     return () => clearInterval(interval);
   }, [data]);
 
-  // Extract dominant color from album art and report to parent (e.g. for GridScan)
+  // Extract dominant color from album art and report to parent
   useEffect(() => {
     const imageUrl = data?.item?.album?.images?.[0]?.url;
-    if (!imageUrl || !onDominantColor) return;
+    const trackId = data?.item?.id || null;
+    
+    if (!imageUrl) {
+      onTrackChange?.(null, '');
+      return;
+    }
 
     getDominantColor(imageUrl)
-      .then(onDominantColor)
+      .then((color) => {
+        onDominantColor?.(color);
+        onTrackChange?.(trackId, color);
+      })
       .catch(() => { /* ignore; keep previous color */ });
-  }, [data?.item?.album?.images?.[0]?.url, onDominantColor]);
+  }, [data?.item?.album?.images?.[0]?.url, data?.item?.id, onDominantColor, onTrackChange]);
 
   if (loading) {
     return (
@@ -81,13 +91,13 @@ export default function CurrentlyPlaying({ onDominantColor }: CurrentlyPlayingPr
   const progressPercent = track ? (progress / track.duration_ms) * 100 : 0;
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-6 sm:p-8 border border-zinc-800">
-      
+    <TiltWrapper scaleOnHover={1.02} rotateAmplitude={8}>
+      <div className="w-full bg-zinc-900/60 rounded-2xl p-12 border border-zinc-800">
         {track ? (
             <div key={track.id} className="relative z-10">
               <div className="flex flex-col items-center gap-4">
                 {/* Playing Status */}
-                <div className="flex items-center justify-center !pt-4">
+                <div className="flex items-center justify-center">
                     {isPlaying ? (
                       <>
                         <span className="w-2 h-2 bg-[#1DB954] rounded-full animate-pulse" />
@@ -121,7 +131,7 @@ export default function CurrentlyPlaying({ onDominantColor }: CurrentlyPlayingPr
                 </a>
 
                 {/* Track Info */}
-                <div className="flex-1 min-w-0 text-center space-y-3">
+                <div className="w-full text-center space-y-3">
                   {/* Track Name */}
                   <a
                     href={track.external_urls.spotify}
@@ -129,7 +139,7 @@ export default function CurrentlyPlaying({ onDominantColor }: CurrentlyPlayingPr
                     rel="noopener noreferrer"
                     className="block group"
                   >
-                    <h2 className="font-bold text-2xl sm:text-3xl text-white truncate group-hover:text-[#1DB954] transition-colors">
+                    <h2 className="font-bold text-2xl sm:text-3xl text-white text-wrap break-words group-hover:text-[#1DB954] transition-colors">
                       {track.name}
                     </h2>
                   </a>
@@ -145,8 +155,8 @@ export default function CurrentlyPlaying({ onDominantColor }: CurrentlyPlayingPr
                   </p>
 
                   {/* Progress Bar */}
-                  <div className="!p-8">
-                    <div className="min-w-72 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="pt-4">
+                    <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-[#1DB954]"
                         style={{ width: `${progressPercent}%` }}
@@ -161,14 +171,12 @@ export default function CurrentlyPlaying({ onDominantColor }: CurrentlyPlayingPr
               </div>
             </div>
         ) : (
-          <div
-            className="text-center !p-4"
-          >
+          <div className="text-center py-8">
             <h3 className="text-zinc-400 text-lg font-medium mb-2">Nothing playing</h3>
             <p className="text-zinc-600 text-sm">Play something on Spotify to see it here</p>
           </div>
         )}
-    </div>
-
+      </div>
+    </TiltWrapper>
   );
 }
