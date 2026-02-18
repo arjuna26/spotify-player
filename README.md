@@ -39,16 +39,11 @@ A minimalistic, visually stunning Spotify analytics dashboard built with React a
 3. Create a `.env` file with your Spotify API credentials:
    ```
    VITE_SPOTIFY_CLIENT_ID=your_client_id
-   VITE_SPOTIFY_REDIRECT_URI=http://localhost:5173/callback
+   VITE_SPOTIFY_REDIRECT_URI=http://localhost:5173/callback (whatever you have in your spotify api dashboard)
    ```
-4. Start the development server:
+4. 
    ```bash
    npm run dev
    ```
+            
 
-## Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
