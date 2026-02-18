@@ -6,9 +6,10 @@ import TiltedCard from '../react-bits/TiltedCard';
 
 interface CurrentlyPlayingProps {
   onDominantColor?: (color: string) => void;
+  onTrackChange?: (trackId: string | null, color: string) => void;
 }
 
-export default function CurrentlyPlaying({ onDominantColor }: CurrentlyPlayingProps) {
+export default function CurrentlyPlaying({ onDominantColor, onTrackChange }: CurrentlyPlayingProps) {
   const [data, setData] = useState<CurrentlyPlayingType | null>(null);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -49,15 +50,23 @@ export default function CurrentlyPlaying({ onDominantColor }: CurrentlyPlayingPr
     return () => clearInterval(interval);
   }, [data]);
 
-  // Extract dominant color from album art and report to parent (e.g. for GridScan)
+  // Extract dominant color from album art and report to parent
   useEffect(() => {
     const imageUrl = data?.item?.album?.images?.[0]?.url;
-    if (!imageUrl || !onDominantColor) return;
+    const trackId = data?.item?.id || null;
+    
+    if (!imageUrl) {
+      onTrackChange?.(null, '');
+      return;
+    }
 
     getDominantColor(imageUrl)
-      .then(onDominantColor)
+      .then((color) => {
+        onDominantColor?.(color);
+        onTrackChange?.(trackId, color);
+      })
       .catch(() => { /* ignore; keep previous color */ });
-  }, [data?.item?.album?.images?.[0]?.url, onDominantColor]);
+  }, [data?.item?.album?.images?.[0]?.url, data?.item?.id, onDominantColor, onTrackChange]);
 
   if (loading) {
     return (
