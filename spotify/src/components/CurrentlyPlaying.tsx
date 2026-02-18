@@ -3,6 +3,7 @@ import { getCurrentlyPlaying, formatDuration } from '../services/spotify';
 import type { CurrentlyPlaying as CurrentlyPlayingType } from '../services/spotify';
 import { getDominantColor } from '../utils/dominantColor';
 import TiltedCard from '../react-bits/TiltedCard';
+import TiltWrapper from '../react-bits/TiltWrapper';
 
 interface CurrentlyPlayingProps {
   onDominantColor?: (color: string) => void;
@@ -90,8 +91,8 @@ export default function CurrentlyPlaying({ onDominantColor, onTrackChange }: Cur
   const progressPercent = track ? (progress / track.duration_ms) * 100 : 0;
 
   return (
-    <div className="w-full min-w-72 max-w-sm bg-zinc-900 rounded-2xl p-6 sm:p-8 border border-zinc-800">
-      
+    <TiltWrapper scaleOnHover={1.02} rotateAmplitude={8}>
+      <div className="w-full bg-zinc-900/60 rounded-2xl p-12 border border-zinc-800">
         {track ? (
             <div key={track.id} className="relative z-10">
               <div className="flex flex-col items-center gap-4">
@@ -170,14 +171,12 @@ export default function CurrentlyPlaying({ onDominantColor, onTrackChange }: Cur
               </div>
             </div>
         ) : (
-          <div
-            className="text-center !p-4"
-          >
+          <div className="text-center py-8">
             <h3 className="text-zinc-400 text-lg font-medium mb-2">Nothing playing</h3>
             <p className="text-zinc-600 text-sm">Play something on Spotify to see it here</p>
           </div>
         )}
-    </div>
-
+      </div>
+    </TiltWrapper>
   );
 }

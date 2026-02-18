@@ -15,7 +15,7 @@ export default function UserProfile() {
   const isPremium = user.product === 'premium';
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-3 font-bold">
       {user.images?.[0]?.url ? (
         <img
           src={user.images[0].url}
@@ -24,13 +24,13 @@ export default function UserProfile() {
         />
       ) : (
         <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center">
-          <span className="text-zinc-400 text-sm font-medium">
+          <span className="text-white text-sm font-medium">
             {user.display_name?.charAt(0).toUpperCase() || '?'}
           </span>
         </div>
       )}
       <div className="flex items-center gap-2">
-        <span className="text-white text-sm font-medium">
+        <span className="text-white font-bold text-sm">
           {user.display_name}
         </span>
         {isPremium && (

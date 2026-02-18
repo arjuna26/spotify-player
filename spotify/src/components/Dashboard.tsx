@@ -1,16 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import CurrentlyPlaying from './CurrentlyPlaying';
 import TopTracks from './TopTracks';
 import TopArtists from './TopArtists';
 import RecentlyPlayed from './RecentlyPlayed';
 import UserProfile from './UserProfile';
 import { useAuth } from '../context/AuthContext';
-import LiquidEther from '../react-bits/LiquidEther.jsx';
+import Plasma from '../react-bits/Plasma.jsx';
 import Lenis from 'lenis';
 
 export default function Dashboard() {
   const { logout } = useAuth();
-  const [scanColor, setScanColor] = useState('');
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -34,26 +33,16 @@ export default function Dashboard() {
   return (
     <>
       <div className="w-full h-full fixed top-0 left-0 pointer-events-none">
-        <LiquidEther
-          mouseForce={16}
-          cursorSize={150}
-          isViscous
-          viscous={30}
-          colors={[scanColor]}
-          autoDemo={true}
-          autoSpeed={0.5}
-          autoIntensity={2}
-          resolution={0.5}
-        />
+        <Plasma color="#1DB954"/>
       </div>
 
       <div className="min-h-screen flex flex-col items-center">
-        <header className="w-full sticky top-0 z-50 py-6 bg-transparent backdrop-blur-xl">
+        <header className="w-full sticky top-0 z-50 py-6">
           <div className="flex items-center justify-center gap-8">
             <UserProfile />
             <button
               onClick={logout}
-              className="text-zinc-400 hover:text-white text-sm transition-colors"
+              className="text-white font-bold hover:text-white text-sm transition-colors"
             >
               Sign out
             </button>
@@ -61,11 +50,22 @@ export default function Dashboard() {
         </header>
 
         <main className="z-10 gap-20 flex flex-col items-center pb-20">
-          <CurrentlyPlaying onDominantColor={setScanColor} />
+          <CurrentlyPlaying />
           <TopTracks limit={5} />
-          <TopArtists limit={6} />
           <RecentlyPlayed limit={8} />
+          <TopArtists limit={6} />
         </main>
+
+        <footer className="w-full py-8 text-center text-white font-semibold text-xs">
+          <p>
+            Built with{' '}
+            <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-400 transition-colors">TypeScript</a>
+            {' • '}
+            <a href="https://developer.spotify.com/documentation/web-api" target="_blank" rel="noopener noreferrer" className="hover:text-[#1DB954] transition-colors">Spotify API</a>
+            {' • '}
+            <a href="https://reactbits.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-400 transition-colors">React Bits</a>
+          </p>
+        </footer>
       </div>
     </>
   );

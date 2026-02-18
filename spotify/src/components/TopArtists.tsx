@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getTopArtists } from '../services/spotify';
 import type { SpotifyArtist, TimeRange } from '../services/spotify';
 import TiltedCard from '../react-bits/TiltedCard';
+import TiltWrapper from '../react-bits/TiltWrapper';
 
 interface TopArtistsProps {
   limit?: number;
@@ -42,44 +43,46 @@ export default function TopArtists({ limit = 6, timeRange = 'medium_term' }: Top
   }
 
   return (
-    <div className="w-full min-w-72 bg-zinc-900 rounded-2xl p-6 sm:p-8 border border-zinc-800">
-      <h3 className="text-zinc-400 text-xs font-medium uppercase tracking-wider mb-6">
-        Top Artists
-      </h3>
-      <div className="grid grid-cols-3 gap-6">
-        {artists.map((artist) => (
-          <a
-            key={artist.id}
-            href={artist.external_urls.spotify}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex flex-col items-center gap-3 group"
-          >
-            <div className="relative">
-              <TiltedCard
-                imageSrc={artist.images?.[1]?.url || artist.images?.[0]?.url || '/placeholder.png'}
-                altText={artist.name}
-                containerWidth="5rem"
-                containerHeight="5rem"
-                imageWidth="5rem"
-                imageHeight="5rem"
-                scaleOnHover={1.08}
-                rotateAmplitude={8}
-                showMobileWarning={false}
-                showTooltip={false}
-              />
-            </div>
-            <p className="text-zinc-300 text-xs font-medium text-center truncate w-full group-hover:text-[#1DB954] transition-colors">
-              {artist.name}
-            </p>
-            {artist.genres?.[0] && (
-              <p className="text-zinc-600 text-[10px] truncate w-full text-center">
-                {artist.genres[0]}
+    <TiltWrapper scaleOnHover={1.02} rotateAmplitude={6}>
+      <div className="w-full min-w-72 bg-zinc-900/60 rounded-2xl p-6 sm:p-8 border border-zinc-800">
+        <h3 className="text-zinc-400 text-xs font-medium uppercase tracking-wider mb-6">
+          Top Artists
+        </h3>
+        <div className="grid grid-cols-3 gap-6">
+          {artists.map((artist) => (
+            <a
+              key={artist.id}
+              href={artist.external_urls.spotify}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-3 group"
+            >
+              <div className="relative">
+                <TiltedCard
+                  imageSrc={artist.images?.[1]?.url || artist.images?.[0]?.url || '/placeholder.png'}
+                  altText={artist.name}
+                  containerWidth="5rem"
+                  containerHeight="5rem"
+                  imageWidth="5rem"
+                  imageHeight="5rem"
+                  scaleOnHover={1.08}
+                  rotateAmplitude={8}
+                  showMobileWarning={false}
+                  showTooltip={false}
+                />
+              </div>
+              <p className="text-zinc-300 text-xs font-medium text-center truncate w-full group-hover:text-[#1DB954] transition-colors">
+                {artist.name}
               </p>
-            )}
-          </a>
-        ))}
+              {artist.genres?.[0] && (
+                <p className="text-zinc-600 text-[10px] truncate w-full text-center">
+                  {artist.genres[0]}
+                </p>
+              )}
+            </a>
+          ))}
+        </div>
       </div>
-    </div>
+    </TiltWrapper>
   );
 }
