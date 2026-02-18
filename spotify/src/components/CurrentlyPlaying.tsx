@@ -90,13 +90,13 @@ export default function CurrentlyPlaying({ onDominantColor, onTrackChange }: Cur
   const progressPercent = track ? (progress / track.duration_ms) * 100 : 0;
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-6 sm:p-8 border border-zinc-800">
+    <div className="w-full min-w-72 max-w-sm bg-zinc-900 rounded-2xl p-6 sm:p-8 border border-zinc-800">
       
         {track ? (
             <div key={track.id} className="relative z-10">
               <div className="flex flex-col items-center gap-4">
                 {/* Playing Status */}
-                <div className="flex items-center justify-center !pt-4">
+                <div className="flex items-center justify-center">
                     {isPlaying ? (
                       <>
                         <span className="w-2 h-2 bg-[#1DB954] rounded-full animate-pulse" />
@@ -130,7 +130,7 @@ export default function CurrentlyPlaying({ onDominantColor, onTrackChange }: Cur
                 </a>
 
                 {/* Track Info */}
-                <div className="flex-1 min-w-0 text-center space-y-3">
+                <div className="w-full text-center space-y-3">
                   {/* Track Name */}
                   <a
                     href={track.external_urls.spotify}
@@ -138,7 +138,7 @@ export default function CurrentlyPlaying({ onDominantColor, onTrackChange }: Cur
                     rel="noopener noreferrer"
                     className="block group"
                   >
-                    <h2 className="font-bold text-2xl sm:text-3xl text-white truncate group-hover:text-[#1DB954] transition-colors">
+                    <h2 className="font-bold text-2xl sm:text-3xl text-white text-wrap break-words group-hover:text-[#1DB954] transition-colors">
                       {track.name}
                     </h2>
                   </a>
@@ -154,8 +154,8 @@ export default function CurrentlyPlaying({ onDominantColor, onTrackChange }: Cur
                   </p>
 
                   {/* Progress Bar */}
-                  <div className="!p-8">
-                    <div className="min-w-72 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="pt-4">
+                    <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-[#1DB954]"
                         style={{ width: `${progressPercent}%` }}

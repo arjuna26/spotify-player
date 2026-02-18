@@ -27,7 +27,7 @@ export default function TopArtists({ limit = 6, timeRange = 'medium_term' }: Top
 
   if (loading) {
     return (
-      <div className="bg-zinc-900 rounded-2xl p-8 border border-zinc-800">
+      <div className="w-full min-w-72 bg-zinc-900 rounded-2xl p-6 sm:p-8 border border-zinc-800">
         <div className="h-5 w-24 bg-zinc-800 rounded mb-6 animate-pulse" />
         <div className="grid grid-cols-3 gap-6">
           {Array.from({ length: limit }).map((_, i) => (
@@ -42,7 +42,7 @@ export default function TopArtists({ limit = 6, timeRange = 'medium_term' }: Top
   }
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-8 border border-zinc-800">
+    <div className="w-full min-w-72 bg-zinc-900 rounded-2xl p-6 sm:p-8 border border-zinc-800">
       <h3 className="text-zinc-400 text-xs font-medium uppercase tracking-wider mb-6">
         Top Artists
       </h3>

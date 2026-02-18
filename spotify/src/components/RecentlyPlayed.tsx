@@ -25,13 +25,13 @@ export default function RecentlyPlayed({ limit = 10 }: RecentlyPlayedProps) {
 
   if (loading) {
     return (
-      <div className="bg-zinc-900 rounded-2xl p-8 border border-zinc-800">
+      <div className="w-full min-w-72 bg-zinc-900 rounded-2xl p-6 sm:p-8 border border-zinc-800">
         <div className="h-5 w-32 bg-zinc-800 rounded mb-6 animate-pulse" />
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex items-center gap-3 animate-pulse">
               <div className="w-10 h-10 bg-zinc-800 rounded" />
-              <div className="flex-1 space-y-1.5">
+              <div className="flex-1 flex flex-col gap-1.5">
                 <div className="h-3 w-2/3 bg-zinc-800 rounded" />
                 <div className="h-2.5 w-1/3 bg-zinc-800 rounded" />
               </div>
@@ -44,18 +44,18 @@ export default function RecentlyPlayed({ limit = 10 }: RecentlyPlayedProps) {
   }
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-8 border border-zinc-800">
+    <div className="w-full min-w-72 bg-zinc-900 rounded-2xl p-6 sm:p-8 border border-zinc-800">
       <h3 className="text-zinc-400 text-xs font-medium uppercase tracking-wider mb-6">
         Recently Played
       </h3>
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         {history.map((item, index) => (
           <a
             key={`${item.track.id}-${index}`}
             href={item.track.external_urls.spotify}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-zinc-800/50 transition-colors group"
+            className="flex items-center gap-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors group"
           >
             <img
               src={item.track.album.images[2]?.url || item.track.album.images[0]?.url}
