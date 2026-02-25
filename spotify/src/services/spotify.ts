@@ -37,6 +37,7 @@ export interface SpotifyTrack {
   artists: SpotifyArtist[];
   album: SpotifyAlbum;
   duration_ms: number;
+  popularity: number;
   external_urls: {
     spotify: string;
   };
@@ -114,8 +115,8 @@ async function spotifyFetch<T>(endpoint: string, retryCount = 0): Promise<T | nu
     return null;
   }
 
-  if (response.status === 429 && retryCount < 1) {
-    const retryAfter = parseInt(response.headers.get('Retry-After') ?? '5', 10);
+  if (response.status === 429 && retryCount < 3) {
+    const retryAfter = parseInt(response.headers.get('Retry-After') ?? '2', 10);
     const waitMs = Math.min(retryAfter * 1000, 10000);
     await new Promise((r) => setTimeout(r, waitMs));
     return spotifyFetch<T>(endpoint, retryCount + 1);
