@@ -2,9 +2,16 @@ import { useEffect } from 'react';
 import { initiateSpotifyLogin } from '../services/auth';
 import LiquidEther from '../react-bits/LiquidEther.jsx';
 import TopTracksTimeMachine from './TopTracksTimeMachine';
+import CardSwap, { Card } from './CardSwap';
 import { LogoLoop } from './LogoLoop';
 import type { LogoItem } from './LogoLoop';
 import type { SpotifyTrack, TimeRange } from '../services/spotify';
+import ReactIcon from '../icons/react.svg?react';
+import TypeScriptIcon from '../icons/typescript.svg?react';
+import ViteIcon from '../icons/vite.svg?react';
+import TailwindCssIcon from '../icons/tailwindcss.svg?react';
+import SpotifyIcon from '../icons/spotify.svg?react';
+import ReactBitsIcon from '../icons/reactbits.svg?react';
 
 const m = (name: string) => `/mock/${name}.jpg`;
 
@@ -38,7 +45,7 @@ function MockRecentlyPlayed() {
     { name: 'Alright', artist: 'Kendrick Lamar', time: '24m ago', img: m('alright') },
   ];
   return (
-    <div className="w-[380px] bg-zinc-900/60 rounded-2xl p-6 border border-zinc-800">
+    <div className="w-full h-full bg-zinc-900 rounded-2xl p-6 overflow-hidden">
       <h3 className="text-zinc-400 text-xs font-medium uppercase tracking-wider mb-6">Recently Played</h3>
       <div className="flex flex-col gap-2">
         {history.map((h, i) => (
@@ -66,7 +73,7 @@ function MockTopArtists() {
     { name: 'Travis Scott', genre: 'rap', img: m('travisscott') },
   ];
   return (
-    <div className="w-[380px] bg-zinc-900/60 rounded-2xl p-6 border border-zinc-800">
+    <div className="w-full h-full bg-zinc-900 rounded-2xl p-6 overflow-hidden">
       <h3 className="text-zinc-400 text-xs font-medium uppercase tracking-wider mb-6">Top Artists</h3>
       <div className="grid grid-cols-3 gap-6">
         {artists.map((a) => (
@@ -81,18 +88,36 @@ function MockTopArtists() {
   );
 }
 
-function CarouselCard({ children }: { children: React.ReactNode }) {
+function TechBadge({
+  name,
+  color,
+  icon,
+}: {
+  name: string;
+  color: string;
+  icon?: React.ReactNode;
+}) {
   return (
-    <div className="text-base flex items-center">
-      {children}
+    <div className="text-base flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
+      {icon ? (
+        <span className="shrink-0 w-5 h-5 flex items-center justify-center [&_svg]:w-full [&_svg]:h-full" aria-hidden>
+          {icon}
+        </span>
+      ) : (
+        <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+      )}
+      <span className="text-white/60 text-sm font-medium whitespace-nowrap">{name}</span>
     </div>
   );
 }
 
-const CAROUSEL_ITEMS: LogoItem[] = [
-  { node: <CarouselCard><div className="w-[380px]"><TopTracksTimeMachine mockData={MOCK_DATA} /></div></CarouselCard> },
-  { node: <CarouselCard><MockTopArtists /></CarouselCard> },
-  { node: <CarouselCard><MockRecentlyPlayed /></CarouselCard> },
+const TECH_ITEMS: LogoItem[] = [
+  { node: <TechBadge name="React 19" color="#61DAFB" icon={<ReactIcon />} /> },
+  { node: <TechBadge name="TypeScript" color="#3178C6" icon={<TypeScriptIcon />} /> },
+  { node: <TechBadge name="Vite" color="#BD34FE" icon={<ViteIcon />} /> },
+  { node: <TechBadge name="Tailwind CSS" color="#38BDF8" icon={<TailwindCssIcon />} /> },
+  { node: <TechBadge name="Spotify API" color="#1DB954" icon={<SpotifyIcon />} /> },
+  { node: <TechBadge name="React Bits" color="#F97316" icon={<ReactBitsIcon />} /> },
 ];
 
 export default function LoginPage() {
@@ -126,30 +151,58 @@ export default function LoginPage() {
         />
       </div>
 
-      <div className="h-full flex items-center px-4">
-        {/* Login — left side, centered vertically */}
-        <div className="flex flex-col items-center gap-6 z-10 shrink-0 w-[280px] ml-auto mr-12">
-          <button
-            onClick={handleLogin}
-            className="flex items-center justify-center gap-2 !py-2.5 !px-5 bg-[#1DB954] hover:bg-[#1ed760] text-black font-semibold rounded-full cursor-pointer transition-colors"
-          >
-            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
-              <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-            </svg>
-            Continue with Spotify
-          </button>
-          <p className="text-white/60 text-xs">
-            Read-only access to your listening data
-          </p>
+      <div className="h-full flex flex-col">
+        {/* Center area */}
+        <div className="flex-1 flex items-center px-12">
+          {/* Login — left side, centered vertically */}
+          <div className="flex flex-col items-center gap-6 z-10 shrink-0 w-[280px] ml-auto mr-12">
+            <button
+              onClick={handleLogin}
+              className="flex items-center justify-center gap-2 !py-2.5 !px-5 bg-[#1DB954] hover:bg-[#1ed760] text-black font-semibold rounded-full cursor-pointer transition-colors"
+            >
+              <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+              </svg>
+              Continue with Spotify
+            </button>
+            <p className="text-white/60 text-xs">
+              Read-only access to your listening data
+            </p>
+          </div>
+
+          {/* CardSwap — right side */}
+          <div className="relative h-full w-[50%] shrink-0 pointer-events-none opacity-90">
+            <CardSwap
+              width={500}
+              height={600}
+              cardDistance={40}
+              verticalDistance={30}
+              delay={5000}
+              skewAmount={5}
+              easing="elastic"
+            >
+              <Card>
+                <div className="w-full h-full overflow-hidden">
+                  <TopTracksTimeMachine mockData={MOCK_DATA} />
+                </div>
+              </Card>
+              <Card>
+                <MockTopArtists />
+              </Card>
+              <Card>
+                <MockRecentlyPlayed />
+              </Card>
+            </CardSwap>
+          </div>
         </div>
 
-        {/* LogoLoop carousel */}
-        <div className="pointer-events-none opacity-90 w-[50%] shrink-0 overflow-hidden">
+        {/* Tech stack LogoLoop at bottom */}
+        <div className="shrink-0 pb-8 opacity-60">
           <LogoLoop
-            logos={CAROUSEL_ITEMS}
-            speed={30}
+            logos={TECH_ITEMS}
+            speed={20}
             direction="left"
-            gap={48}
+            gap={24}
             logoHeight={16}
             pauseOnHover={false}
             fadeOut={false}

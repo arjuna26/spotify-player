@@ -83,7 +83,7 @@ export default function TopTracksTimeMachine({ mockData }: TopTracksTimeMachineP
 
   return (
     <TiltWrapper scaleOnHover={1.01} rotateAmplitude={3}>
-      <div className="w-full min-w-72 bg-zinc-900/60 rounded-2xl p-6 sm:p-8 border border-zinc-800">
+      <div className="w-full min-w-72 bg-zinc-900 rounded-2xl p-6 sm:p-8 border border-zinc-800">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-zinc-400 text-xs font-medium uppercase tracking-wider">
             Top Tracks Time Machine
