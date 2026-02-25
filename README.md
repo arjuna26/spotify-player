@@ -2,10 +2,7 @@
 
 A minimalistic, visually stunning Spotify analytics dashboard built with React and TypeScript.
 
-<img width="1920" height="965" alt="image" src="https://github.com/user-attachments/assets/0118d0fa-c884-4b08-8dbb-4f784904de12" />
-<img width="1905" height="965" alt="image" src="https://github.com/user-attachments/assets/e17d1b63-db47-4ddc-b0fa-e64a95c42d2d" />
-
-
+log in to your spotify account at [the deployment url](spotify.arjunaherbst.com)
 
 ## Features
 
