@@ -11,6 +11,7 @@
 html, body, #root {
   height: 100%;
   width: 100%;
+  overscroll-behavior: none;
 }
 
 body {
@@ -53,11 +54,15 @@ body {
   outline-offset: 2px;
 }
 
-/* Smooth transitions for color scheme changes */
-* {
+/* Smooth transitions for color scheme changes — scoped to not block other transitions */
+*:not([class*="transition-"]) {
   transition-property: background-color, border-color;
   transition-duration: 150ms;
   transition-timing-function: ease;
+}
+
+.duration-2000 {
+  transition-duration: 2000ms;
 }
 
 /* Disable transitions for animations */
