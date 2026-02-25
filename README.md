@@ -31,19 +31,6 @@ A minimalistic, visually stunning Spotify analytics dashboard built with React a
 
 ## Getting Started
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a `.env` file with your Spotify API credentials:
-   ```
-   VITE_SPOTIFY_CLIENT_ID=your_client_id
-   VITE_SPOTIFY_REDIRECT_URI=http://localhost:5173/callback (whatever you have in your spotify api dashboard)
-   ```
-4. 
-   ```bash
-   npm run dev
-   ```
+log in to your spotify account at [the deployment url](spotify.arjunaherbst.com)
             
 
