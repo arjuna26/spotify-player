@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { getCurrentlyPlaying, formatDuration } from '../services/spotify';
 import type { CurrentlyPlaying as CurrentlyPlayingType } from '../services/spotify';
 import { getDominantColor } from '../utils/dominantColor';
-import TiltedCard from '../react-bits/TiltedCard';
 import TiltWrapper from '../react-bits/TiltWrapper';
 
 interface CurrentlyPlayingProps {
@@ -91,7 +90,7 @@ export default function CurrentlyPlaying({ onDominantColor, onTrackChange }: Cur
   const progressPercent = track ? (progress / track.duration_ms) * 100 : 0;
 
   return (
-    <TiltWrapper scaleOnHover={1.02} rotateAmplitude={8}>
+    <TiltWrapper rotateAmplitude={0}>
       <div className="w-full bg-zinc-900/60 rounded-2xl p-12 border border-zinc-800">
         {track ? (
             <div key={track.id} className="relative z-10">
@@ -115,18 +114,11 @@ export default function CurrentlyPlaying({ onDominantColor, onTrackChange }: Cur
                   rel="noopener noreferrer"
                   className="shrink-0 relative group block"
                 >
-                  <TiltedCard
-                    imageSrc={track.album.images[0]?.url ?? '/placeholder.png'}
-                    altText={track.album.name}
-                    captionText={track.album.name}
-                    containerWidth="100%"
-                    containerHeight="14rem"
-                    imageWidth="14rem"
-                    imageHeight="14rem"
-                    scaleOnHover={1.05}
-                    rotateAmplitude={12}
-                    showMobileWarning={false}
-                    showTooltip={false}
+                  <img
+                    src={track.album.images[0]?.url ?? '/placeholder.png'}
+                    alt={track.album.name}
+                    className="rounded-xl shadow-lg object-cover"
+                    style={{ width: '14rem', height: '14rem', display: 'block' }}
                   />
                 </a>
 

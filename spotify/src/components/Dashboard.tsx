@@ -57,13 +57,13 @@ export default function Dashboard() {
           <div className="flex flex-col md:flex-row gap-8 md:gap-10">
             {/* Left column — Currently Playing, sticky on desktop */}
             <div className="w-full md:w-[340px] shrink-0">
-              <div className="md:sticky md:top-24">
+              <div className="md:sticky md:top-32">
                 <CurrentlyPlaying />
               </div>
             </div>
 
             {/* Right column */}
-            <div className="flex-1 flex flex-col gap-24 min-w-0">
+            <div className="flex-1 flex flex-col gap-24 min-w-0 mt-12">
               <TopTracksTimeMachine />
               <ListeningInsights />
               <TopTracks limit={5} />

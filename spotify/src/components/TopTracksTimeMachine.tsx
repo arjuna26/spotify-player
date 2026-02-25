@@ -9,14 +9,18 @@ const TIME_RANGES: { key: TimeRange; label: string; description: string }[] = [
   { key: 'long_term', label: 'All Time', description: 'Your lifetime favorites' },
 ];
 
-export default function TopTracksTimeMachine() {
+interface TopTracksTimeMachineProps {
+  mockData?: Map<TimeRange, SpotifyTrack[]>;
+}
+
+export default function TopTracksTimeMachine({ mockData }: TopTracksTimeMachineProps = {}) {
   const [activeRange, setActiveRange] = useState<TimeRange>('short_term');
-  const [tracks, setTracks] = useState<Map<TimeRange, SpotifyTrack[]>>(new Map());
-  const [loading, setLoading] = useState(true);
+  const [tracks, setTracks] = useState<Map<TimeRange, SpotifyTrack[]>>(mockData || new Map());
+  const [loading, setLoading] = useState(!mockData);
   const [switching, setSwitching] = useState(false);
 
-  // Prefetch all time ranges on mount
   useEffect(() => {
+    if (mockData) return;
     const fetchAll = async () => {
       setLoading(true);
       const map = new Map<TimeRange, SpotifyTrack[]>();
@@ -29,7 +33,7 @@ export default function TopTracksTimeMachine() {
     };
 
     fetchAll();
-  }, []);
+  }, [mockData]);
 
   const handleRangeChange = (range: TimeRange) => {
     if (range === activeRange) return;
@@ -128,7 +132,8 @@ export default function TopTracksTimeMachine() {
                 <img
                   src={track.album.images[2]?.url || track.album.images[0]?.url}
                   alt={track.album.name}
-                  className="w-12 h-12 rounded-lg object-cover shrink-0"
+                  className="rounded-lg object-cover shrink-0"
+                  style={{ width: 48, height: 48 }}
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
